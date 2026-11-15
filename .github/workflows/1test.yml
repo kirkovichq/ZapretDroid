@@ -1,0 +1,36 @@
+name: Build ZapretDroid APK
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Unpack source
+        run: |
+          unzip -q ZapretDroid-GitHub-Actions.zip
+          cd ZapretDroid-main
+          chmod +x gradlew
+
+      - name: Build APK
+        working-directory: ZapretDroid-main
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ZapretDroid-APK
+          path: ZapretDroid-main/app/build/outputs/apk/debug/*.apk
